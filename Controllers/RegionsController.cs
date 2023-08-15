@@ -72,5 +72,37 @@ namespace TRWalks.API.Controllers
             //return domain
             return Ok(regionDto);
         }
+
+        //Post To Create new Region
+        //Post:https://localhost:portnumber/api/regions
+        
+        [HttpPost]
+
+        public IActionResult Create([FromBody] AddRegionRequestDto addRegionRequestDto) 
+        {
+            //Map or Convert Dto to Domain Model
+
+            var regionDomainModel = new Region 
+            {
+                Name = addRegionRequestDto.Name,
+                Code = addRegionRequestDto.Code,    
+                RegionImageUrl=addRegionRequestDto.RegionImageUrl
+            };
+
+            //Use Domain Model to create Region
+            dbContext.Regions.Add(regionDomainModel);
+            dbContext.SaveChanges();
+
+            //Map Domainmodel back to DTO
+            var regionDto = new RegionDto
+            {
+                Id = regionDomainModel.Id,
+                Code = regionDomainModel.Code,
+                Name = regionDomainModel.Name,
+                RegionImageUrl = regionDomainModel.RegionImageUrl
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id= regionDto.Id }, regionDto);
+        }
     }
 }

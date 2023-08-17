@@ -18,11 +18,11 @@ namespace TRWalks.API.Controllers
             this.dbContext = dbContext;
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             //Get Data From Database to DTOs
 
-            var regionsDomain = dbContext.Regions.ToList();
+            var regionsDomain = await dbContext.Regions.ToListAsync();
 
             //Map domain models to DTOS
 
@@ -48,11 +48,11 @@ namespace TRWalks.API.Controllers
         [HttpGet]
         [Route("{id:Guid}")]
 
-        public IActionResult GetById(Guid id) 
+        public async Task<IActionResult> GetById(Guid id) 
         {
            // Get Data From Database to DTOs
 
-            var regionDomain = dbContext.Regions.FirstOrDefault(r => r.Id == id);
+            var regionDomain = await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
 
             if (regionDomain == null)
             {
@@ -78,7 +78,7 @@ namespace TRWalks.API.Controllers
         
         [HttpPost]
 
-        public IActionResult Create([FromBody] AddRegionRequestDto addRegionRequestDto) 
+        public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto) 
         {
             //Map or Convert Dto to Domain Model
 
@@ -90,8 +90,8 @@ namespace TRWalks.API.Controllers
             };
 
             //Use Domain Model to create Region
-            dbContext.Regions.Add(regionDomainModel);
-            dbContext.SaveChanges();
+           await dbContext.Regions.AddAsync(regionDomainModel);
+           await dbContext.SaveChangesAsync();
 
             //Map Domainmodel back to DTO
             var regionDto = new RegionDto
@@ -109,10 +109,10 @@ namespace TRWalks.API.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             // Get the region that will be updated
-            var regionDomainModel = dbContext.Regions.FirstOrDefault(x=>x.Id == id);
+            var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x=>x.Id == id);
             
             if(regionDomainModel == null)
             {
@@ -124,7 +124,7 @@ namespace TRWalks.API.Controllers
             regionDomainModel.Name = updateRegionRequestDto.Name;
             regionDomainModel.Code = updateRegionRequestDto.Code;
             regionDomainModel.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
-            dbContext.SaveChanges();
+           await dbContext.SaveChangesAsync();
 
             //map the domain model to dto
             var regionDto = new RegionDto
@@ -144,9 +144,9 @@ namespace TRWalks.API.Controllers
         [HttpDelete]
         [Route("{id:Guid}")]
 
-        public IActionResult Delete([FromRoute] Guid id) 
+        public async Task<IActionResult> Delete([FromRoute] Guid id) 
         {
-            var regionDomainModel = dbContext.Regions.FirstOrDefault(x => x.Id == id);  
+            var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);  
 
             if(regionDomainModel == null)
             {
@@ -156,7 +156,7 @@ namespace TRWalks.API.Controllers
             //delete region
 
             dbContext.Regions.Remove(regionDomainModel);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             //return deleted region back
             //map domain to DTO
